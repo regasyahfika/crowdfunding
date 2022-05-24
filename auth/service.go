@@ -40,7 +40,7 @@ func (s *jwtService) ValidateToken(encodedToken string) (*jwt.Token, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
 
 		if !ok {
-			return nil, errors.New("invalid token")
+			return nil, errors.New("INVALID token")
 		}
 
 		return []byte(SECRET_KEY), nil
