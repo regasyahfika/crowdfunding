@@ -2,10 +2,12 @@ package main
 
 import (
 	"crowdfunding/auth"
+	"crowdfunding/campaign"
 	"crowdfunding/config"
 	"crowdfunding/handler"
 	"crowdfunding/helper"
 	"crowdfunding/user"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -18,8 +20,19 @@ func main() {
 	db := config.Connect(&gorm.DB{})
 
 	userRepository := user.NewRepository(db)
+	campaignRepository := campaign.NewRepository(db)
+
+	fmt.Println("-----")
+	fmt.Println(campaignRepository.FindAll())
+	campaigns, _ := campaignRepository.FindByUserID(1)
+	for _, campaign := range campaigns {
+		fmt.Println(campaign.Name)
+		fmt.Println(campaign.CampaignImages[0].FileName)
+	}
+
 	userService := user.NewService(userRepository)
 	authService := auth.NewService()
+
 	userHandler := handler.NewUserHandler(userService, authService)
 
 	router := gin.Default()
