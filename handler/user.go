@@ -134,7 +134,7 @@ func (h userHandler) UploadAvatar(c *gin.Context) {
 	file, err := c.FormFile("avatar")
 	if err != nil {
 		data := gin.H{"is_uploaded": false}
-		response := helper.APIReseponse("Failed to upload avatar imagee", http.StatusBadRequest, "error", data)
+		response := helper.APIReseponse("Failed to upload avatar image", http.StatusBadRequest, "error", data)
 
 		c.JSON(http.StatusBadRequest, response)
 		return
@@ -152,6 +152,7 @@ func (h userHandler) UploadAvatar(c *gin.Context) {
 		return
 	}
 
+	// get data user from authMiddleware
 	currentUser := c.MustGet("currentUser").(user.User)
 	userID := currentUser.ID
 
