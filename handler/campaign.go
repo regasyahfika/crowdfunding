@@ -13,7 +13,7 @@ type campaignHandler struct {
 	service campaign.Service
 }
 
-func NewHandler(service campaign.Service) *campaignHandler {
+func NewCampaignHandler(service campaign.Service) *campaignHandler {
 	return &campaignHandler{service}
 }
 
@@ -23,13 +23,13 @@ func (h *campaignHandler) GetCampaigns(c *gin.Context) {
 	campaigns, err := h.service.GetCampaigns(userID)
 
 	if err != nil {
-		response := helper.APIReseponse("Error to get campaigns", http.StatusBadRequest, "error", nil)
+		response := helper.APIReseponse("Error to get campaigns", http.StatusBadRequest, "error", campaign.FormatCampaigns(campaigns))
 
 		c.JSON(http.StatusBadRequest, response)
 		return
 	}
 
-	response := helper.APIReseponse("List of campaigns", http.StatusOK, "Success", campaigns)
+	response := helper.APIReseponse("List of campaigns", http.StatusOK, "Success", campaign.FormatCampaigns(campaigns))
 	c.JSON(http.StatusOK, response)
 	return
 }
