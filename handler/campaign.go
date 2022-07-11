@@ -3,6 +3,7 @@ package handler
 import (
 	"crowdfunding/campaign"
 	"crowdfunding/helper"
+	"crowdfunding/user"
 	"net/http"
 	"strconv"
 
@@ -54,4 +55,35 @@ func (h *campaignHandler) GetCampaign(c *gin.Context) {
 	response := helper.APIReseponse("Campaign detail", http.StatusOK, "Success", campaign.FormatCampaignDetail(campaignDetail))
 	c.JSON(http.StatusOK, response)
 	return
+}
+
+func (h *campaignHandler) CreateCampaign(c *gin.Context) {
+	var input campaign.CreateCampaignInput
+
+	err := c.ShouldBindJSON(&input)
+	if err != nil {
+		errors := helper.FormatValidationError(err)
+		errorMessage := gin.H{"erros": errors}
+
+		response := helper.APIReseponse("Failed to create campaign", http.StatusUnprocessableEntity, "error", errorMessage)
+		c.JSON(http.StatusUnprocessableEntity, response)
+		return
+	}
+
+	// get data user from authMiddleware
+	currentUser := c.MustGet("currentUser").(user.User)
+
+	input.User = currentUser
+
+	newCampaign, err := h.service.CreateCampaign(input)
+	if err != nil {
+		response := helper.APIReseponse("Failed to create campaign", http.StatusBadRequest, "error", nil)
+		c.JSON(http.StatusBadRequest, response)
+		return
+	}
+
+	response := helper.APIReseponse("Success to create campaign", http.StatusOK, "Success", campaign.FormatCampaignDetail(newCampaign))
+	c.JSON(http.StatusOK, response)
+	return
+
 }
